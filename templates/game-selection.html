@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spielausswahl - TradingCards</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            color: #ffed00; /* Sekundärfarbe */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .fixed-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background-image: url('https://wallpapercave.com/wp/wp8953745.jpg');
+            background-size: cover;
+            background-position: center;
+            z-index: -2;
+        }
+
+        .background-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: linear-gradient(
+                to bottom,
+                rgba(26, 26, 26, 0.95) 0%,
+                rgba(26, 26, 26, 0.85) 100%
+            );
+            z-index: -1;
+        }
+
+        .content-area {
+            position: relative;
+            z-index: 1;
+            padding-bottom: 4rem;
+        }
+
+        .card-container {
+            display: flex;
+            flex-wrap: wrap; /* Karten umbrechen, wenn Platz nicht ausreicht */
+            justify-content: center; /* Karten zentrieren */
+            gap: 20px; /* Abstand zwischen den Karten */
+        }
+
+        .card {
+            width: 300px; /* Feste Breite */
+            height: 410px; /* Feste Höhe */
+            display: flex;
+            flex-direction: column; /* Inhalt vertikal anordnen */
+            align-items: center; /* Zentriert den Inhalt horizontal */
+            justify-content: center; /* Zentriert den Inhalt vertikal */
+            border-radius: 15px; /* Optionale Abrundung */
+            background-color: rgba(255, 255, 255, 0.1); /* Transparenter Hintergrund */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Optionaler Schatten */
+            border: 2px solid rgba(255, 255, 255, 0.3); /* Optionaler Rahmen */
+            overflow: hidden; /* Inhalt bleibt innerhalb der Karte */
+            transition: transform 0.2s ease; /* Animation bei Hover */
+        }
+
+        .card:hover {
+            transform: scale(1.05); /* Leichtes Vergrößern beim Hover */
+        }
+
+        .card img {
+            max-width: 100%; /* Bild skaliert, ohne den Container zu verlassen */
+            max-height: calc(100% - 60px); /* Abzug für Textbereich */
+            object-fit: cover; /* Bild bleibt proportional und füllt den Container */
+            border-radius: 10px; /* Optionale Abrundung */
+        }
+
+        .card-content {
+            width: 100%; /* Passt sich der Kartenbreite an */
+            text-align: center; /* Text zentrieren */
+            margin-top: 10px; /* Abstand zum Bild */
+            font-size: 1rem; /* Schriftgröße anpassen */
+            background: rgba(0, 0, 0, 0.5); /* Halbtransparenter Hintergrund */
+            color: #fff; /* Weißer Text */
+            padding: 5px 0; /* Vertikaler Abstand im Textbereich */
+        }
+
+
+        .card:hover img {
+            transform: scale(1.05);
+        }
+
+
+        .card-content h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-content p {
+            font-size: 1rem;
+        }
+
+        .selected-card {
+            border-color: #ffed00;
+        }
+
+        .submit-button {
+            background-color: #ffed00;
+            padding: 10px 20px;
+            border-radius: 5px;
+            color: black;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .submit-button:hover {
+            background-color: #ffbf00;
+        }
+
+        /* Pop-up Fehlermeldung */
+        .error-popup {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(255, 0, 0, 0.8);
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            font-size: 1rem;
+            display: none; /* Standardmäßig versteckt */
+            z-index: 1000;
+            max-width: 90%;
+            text-align: center;
+        }
+
+        /* Sichtbar machen, wenn angezeigt */
+        .error-popup.visible {
+            display: block;
+        }
+
+        /* Verstecken, wenn nicht sichtbar */
+        .hidden {
+            display: none;
+        }
+
+
+    </style>
+</head>
+<body>
+
+    <!-- Fehlermeldung Pop-up -->
+    <div id="errorPopup" class="error-popup hidden">
+        <p id="errorMessage"></p>
+    </div>
+
+    <div class="fixed-background"></div>
+    <div class="background-overlay"></div>
+
+    <div class="content-area">
+        <!-- Header -->
+        <header class="container mx-auto py-20 text-center">
+            <h1 class="text-5xl font-bold mb-6 gradient-text">Wähle Deine Karten</h1>
+            <p class="text-xl text-gray-300 mb-8">Wähle 5 Karten, die du ins Spiel nehmen möchtest.</p>
+        </header>
+        
+        <form id="cardForm" method="POST" action="/game-selection">
+            <div class="card-container">
+                {% for card in random_cards %}
+                <div class="card" data-card-id="{{ card.id }}">
+                    <img src="{{ card.image }}" alt="Karte">
+                    <label>{{ card.artist }} - {{ card.title }}</label>
+                </div>
+                {% endfor %}
+            </div>
+            <input type="hidden" name="selected_cards" id="selectedCardsInput">
+            <div class="text-center py-8">
+                <button class="submit-button" id="playButton" type="submit" disabled>Spielen</button>
+            </div>
+        </form>        
+    
+    </div>
+
+    <script>
+        const selectedCards = new Set(); // Set zur Speicherung der ausgewählten Karten
+        const maxCards = 5; // Maximale Anzahl auswählbarer Karten
+    
+        // Kartenauswahl-Logik
+        document.querySelectorAll('.card').forEach(card => {
+            card.addEventListener('click', () => {
+                const cardId = card.dataset.cardId;
+    
+                if (card.classList.contains('selected-card')) {
+                    // Karte abwählen
+                    selectedCards.delete(cardId);
+                    card.classList.remove('selected-card');
+                } else if (selectedCards.size < maxCards) {
+                    // Karte auswählen
+                    selectedCards.add(cardId);
+                    card.classList.add('selected-card');
+                }
+    
+                // Button aktivieren/deaktivieren
+                const playButton = document.getElementById('playButton');
+                playButton.disabled = selectedCards.size !== maxCards;
+    
+                // Debugging: Zeige aktuelle Auswahl in der Konsole
+                console.log("DEBUG: Aktuell ausgewählte Karten:", Array.from(selectedCards));
+            });
+        });
+    
+        // Formular-Logik
+        document.getElementById('cardForm').addEventListener('submit', (event) => {
+            if (selectedCards.size !== maxCards) {
+                event.preventDefault();
+                alert("Bitte wähle genau 5 Karten aus.");
+                return;
+            }
+    
+            // Fülle das versteckte Eingabefeld mit den ausgewählten Karten
+            const selectedCardsInput = document.getElementById('selectedCardsInput');
+            selectedCardsInput.value = Array.from(selectedCards).join(',');
+    
+            // Debugging: Überprüfe, welche Karten übergeben werden
+            console.log("DEBUG: Übergabe der Karten an den Server:", selectedCardsInput.value);
+        });
+    
+        // Spiel-Button-Logik (Optional, falls der Button nicht per "submit" arbeitet)
+        document.getElementById('playButton').addEventListener('click', () => {
+            if (selectedCards.size === maxCards) {
+                const form = document.getElementById('cardForm');
+                form.submit();
+            } else {
+                showErrorPopup("Bitte wähle genau 5 Karten aus!");
+            }
+        });
+    
+        // Fehlermeldungs-Funktion
+        function showErrorPopup(message) {
+            const errorPopup = document.getElementById('errorPopup');
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.textContent = message;
+            errorPopup.classList.remove('hidden');
+            
+            setTimeout(() => {
+                errorPopup.classList.add('hidden');
+            }, 3000);
+        }
+    </script>   
+</body>
+</html>

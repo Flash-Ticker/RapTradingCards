@@ -1,0 +1,2 @@
+INSERT INTO rapcards (artistname, title, style, flow, lyric, beat, video, seriennummer, veroeffentlichung, url)
+VALUES ('Artistname', 'Title', '00', '00', '00', '00', '00', '12345', '10/19', 'static/img/rapcards/1.jpg');

@@ -1,0 +1,14 @@
+RapTradingCard/
+├── app.py
+├── config.py
+├── models/
+│   └── your_database_module.py
+├── static/
+│   └── img/
+│       └── rapcards/
+├── templates/
+│   ├── cards.html
+│   ├── game-field.html
+│   ├── games.html
+│   ├── index.html
+│   └── game-selection.html

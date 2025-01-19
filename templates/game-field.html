@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Trading Card Game</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1a1a1a;
+            color: white;
+            overflow: hidden;
+        }
+
+        .game-area {
+            display: flex;
+            flex-direction: column;
+            height: 100vh; /* Feste Höhe des Viewports */
+            padding: 1rem;
+            gap: 1rem;
+        }
+
+        /* Opponent Section */
+        .opponent-section,
+        .player-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .center-section {
+            display: flex;
+            flex-direction: column; /* Inhalte vertikal anordnen */
+            justify-content: space-between; /* Gleicher Abstand zwischen den Elementen */
+            align-items: center; /* Zentriert den Inhalt horizontal */
+            flex: 1; /* Füllt den Platz zwischen oben und unten */
+            padding: 1rem 0; /* Zusätzlicher Abstand oben und unten */
+        }
+
+        .game-elements {
+            display: flex;
+            align-items: center; /* Vertikale Zentrierung */
+            justify-content: space-between; /* Abstand zwischen Würfel und Specialkarten */
+            width: 100%; /* Volle Breite */
+            height: 50%; /* Volle Höhe des Center-Bereichs */
+            gap: 2rem; /* Abstand zwischen Würfel und Specialkarten */
+        }
+
+        /* Card Styles */
+        .card-container {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            padding: 0.5rem;
+        }
+
+/* Standardkarten-Styling */
+.card {
+    width: 120px;
+    height: 168px;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+    cursor: pointer;
+}
+
+.card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Karten-Hover-Effekt */
+.card:hover {
+    transform: scale(1.05); /* Leichtes Vergrößern beim Hover */
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Vollbildmodus für angeklickte Karte */
+.card.fullscreen {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(2); /* Vergrößern und zentrieren */
+    z-index: 1000;
+    box-shadow: 0 16px 24px rgba(0, 0, 0, 0.5);
+}
+
+
+        /* Stacked Cards */
+        .stacked-cards {
+            position: relative;
+            width: 120px;
+            height: 168px;
+        }
+
+        .stacked-cards .card {
+            position: absolute;
+            transform-origin: center;
+        }
+
+        .stacked-cards .card:nth-child(1) { transform: rotate(-6deg); }
+        .stacked-cards .card:nth-child(2) { transform: rotate(-2deg); }
+        .stacked-cards .card:nth-child(3) { transform: rotate(2deg); }
+        .stacked-cards .card:nth-child(4) { transform: rotate(6deg); }
+
+        /* Dice */
+        .dice {
+            width: 80px;
+            height: 80px;
+            background: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+            color: black;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .dice:hover {
+            transform: rotate(15deg);
+        }
+
+        /* Player Section */
+        .player-section {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.9));
+            padding: 1rem;
+            z-index: 10;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            position: fixed;
+            bottom: 200px;
+            right: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            z-index: 11;
+        }
+
+        .action-buttons button {
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s;
+            width: 120px;
+        }
+
+        .end-turn { background-color: #4CAF50; }
+        .attack { background-color: #f44336; }
+        .defense { background-color: #2196F3; }
+
+        /* Headers */
+        .section-header {
+            text-align: center;
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+            font-weight: bold;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .card {
+                width: 90px;
+                height: 126px;
+            }
+
+            .game-elements {
+                padding: 0 1rem;
+            }
+
+            .stacked-cards {
+                width: 90px;
+                height: 126px;
+            }
+
+            .dice {
+                width: 60px;
+                height: 60px;
+                font-size: 1.5rem;
+            }
+
+            .action-buttons {
+                bottom: 160px;
+            }
+
+            .action-buttons button {
+                width: 100px;
+                padding: 0.4rem 0.8rem;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .card {
+                width: 70px;
+                height: 98px;
+            }
+
+            .stacked-cards {
+                width: 70px;
+                height: 98px;
+            }
+
+            .game-elements {
+                padding: 0 0.5rem;
+            }
+
+            .action-buttons {
+                bottom: 130px;
+            }
+
+            .action-buttons button {
+                width: 90px;
+                padding: 0.3rem 0.6rem;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-area">
+        <!-- Opponent Section -->
+        <div class="opponent-section">
+            <div class="section-header">Gegner Karten</div>
+            <div class="card-container">
+                {% for card in bot_cards %}
+                <div class="card">
+                    <img src="{{ url_for('static', filename='img/backside/backside.png') }}" alt="Gegner Karte">
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    
+        <!-- Center Section -->
+        <div class="center-section">   
+            <!-- Würfel vs. Specialkarten -->
+            <div class="game-elements">
+                <div class="dice">
+                    <div class="dice-value">1</div>
+                </div>
+                <div class="stacked-cards">
+                    {% for i in range(4) %}
+                    <div class="card">
+                        <img src="{{ url_for('static', filename='img/backside/backside.png') }}" alt="Specialkarte">
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    
+        <!-- Player Section -->
+        <div class="player-section">
+            <div class="section-header">Deine Karten</div>
+            <div class="card-container">
+                {% for card in player_cards %}
+                <div class="card">
+                    <img src="{{ url_for('static', filename=card.image.replace('static/', '')) }}" alt="{{ card.artist }} - {{ card.title }}">
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+  
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const dice = document.querySelector('.dice');
+            const diceValue = document.querySelector('.dice-value');
+            
+            dice.addEventListener('click', function() {
+                dice.style.pointerEvents = 'none';
+                
+                let rolls = 0;
+                const maxRolls = 10;
+                const rollInterval = setInterval(() => {
+                    diceValue.textContent = Math.floor(Math.random() * 6) + 1;
+                    rolls++;
+                    
+                    if (rolls >= maxRolls) {
+                        clearInterval(rollInterval);
+                        dice.style.pointerEvents = 'auto';
+                    }
+                }, 100);
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const dice = document.querySelector('.dice');
+            const diceValue = document.querySelector('.dice-value');
+
+            dice.addEventListener('click', () => {
+                // Fetch Anfrage an die /roll-dice Route
+                fetch('/roll-dice')
+                    .then(response => response.json())
+                    .then(data => {
+                        // Zeigt das Würfelergebnis an
+                        diceValue.textContent = data.dice_result;
+
+                        // Optional: Animation oder weitere Aktionen basierend auf dem Ergebnis
+                        console.log(`Würfelergebnis: ${data.dice_result}`);
+                    })
+                    .catch(error => console.error('Fehler beim Würfeln:', error));
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const cards = document.querySelectorAll('.card');
+
+            cards.forEach(card => {
+                card.addEventListener('mousedown', () => {
+                    card.classList.add('fullscreen');
+                });
+
+                card.addEventListener('mouseup', () => {
+                    card.classList.remove('fullscreen');
+                });
+
+                card.addEventListener('touchstart', () => {
+                    card.classList.add('fullscreen');
+                });
+
+                card.addEventListener('touchend', () => {
+                    card.classList.remove('fullscreen');
+                });
+            });
+        });
+
+        fetch('/roll-dice', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ role: 'bot' }) // Bot würfelt zuerst
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data.message);
+                // Spieler würfelt
+                fetch('/roll-dice', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ role: 'player' }) // Spieler würfelt
+                })
+                    .then(response => response.json())
+                    .then(playerData => {
+                        console.log(playerData.message);
+                        // Ergebnisse vergleichen
+                        fetch('/determine-first-turn')
+                            .then(response => response.json())
+                            .then(turnData => {
+                                console.log(turnData.message);
+                            });
+                    });
+            });
+
+
+    </script>
+</body>
+</html>

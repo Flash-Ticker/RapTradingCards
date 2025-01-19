@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TradingCards - Sammeln und Spielen</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            color: #ffed00; /* Sekundärfarbe */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* Fixierter Hintergrund */
+        .fixed-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background-image: url('https://wallpapercave.com/wp/wp8953745.jpg');
+            background-size: cover;
+            background-position: center;
+            z-index: -2;
+        }
+
+        /* Dunkler Overlay für bessere Lesbarkeit */
+        .background-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: linear-gradient(
+                to bottom,
+                rgba(26, 26, 26, 0.95) 0%,
+                rgba(26, 26, 26, 0.85) 100%
+            );
+            z-index: -1;
+        }
+
+        /* Content-Wrapper */
+        .content-area {
+            position: relative;
+            z-index: 1;
+            padding-bottom: 4rem;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid hsla(0, 0%, 100%, 0.20);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            border-color: #ffed00; /* Sekundärfarbe */
+            transform: translateY(-5px);
+        }
+
+        .gradient-text {
+            background: linear-gradient(45deg, #ffed00, #ffffff);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Verbesserte Navigation */
+        .nav-blur {
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+        }
+
+        /* Footer Styles */
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            z-index: 10;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+        }
+
+        .loading-spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 4px solid #ffed00; /* Sekundärfarbe */
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .card img {
+            transition: all 0.3s ease;
+        }
+
+        .card:hover img {
+            transform: scale(1.05);
+        }
+
+        .card.overflow-hidden {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid hsla(0, 0%, 100%, 0.20);
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <!-- Fixierter Hintergrund -->
+    <div class="fixed-background"></div>
+    <div class="background-overlay"></div>
+
+    <!-- Content Area -->
+    <div class="content-area">
+        <!-- Navigation -->
+        <nav class="nav-blur p-4 sticky top-0 z-50">
+            <div class="container mx-auto flex justify-between items-center">
+                <div class="text-2xl font-bold gradient-text">TradingCards</div>
+                <div class="space-x-6">
+                    <a href="#" class="hover:text-white transition-colors">Home</a>
+                    <a href="cards" class="hover:text-white transition-colors">Karten</a>
+                    <a href="#" class="hover:text-white transition-colors">Sammeln</a>
+                    <a href="#" class="hover:text-white transition-colors">Tauschen</a>
+                    <a href="games" class="hover:text-white transition-colors">Spielen</a>
+                    <a href="news" class="hover:text-white transition-colors">Neuigkeiten</a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <header class="container mx-auto py-20 px-4 text-center">
+            <h1 class="text-5xl font-bold mb-6 gradient-text">Willkommen bei TradingCards</h1>
+            <p class="text-xl text-gray-300 mb-8">Sammle und tausche Karten, spiele gegen andere Spieler oder Bots!</p>
+            <div class="flex justify-center gap-4">
+                <!-- "Jetzt spielen" Button -->
+                <a href="games" class="bg-[#ffed00] bg-yellow-200 hover:bg-green-500 text-black px-8 py-3 rounded-lg transition-colors">
+                    Jetzt spielen
+                </a>
+
+                <!-- "Jetzt kaufen" Button (fiktiver Kauf-Button) -->
+                <a href="https://store.steampowered.com" target="_blank" class="border border-[#ffed00] text-[#ffed00] hover:bg-[#ffed00] hover:text-green-500 px-8 py-3 rounded-lg transition-colors">
+                    Jetzt kaufen
+                </a>
+            </div>
+        </header>
+
+        <!-- Feature Cards -->
+        <section class="container mx-auto py-16 px-4">
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Sammeln Card -->
+                <div class="card rounded-xl p-6">
+                    <h3 class="text-2xl font-bold mb-4">Karten Sammeln</h3>
+                    <p class="text-gray-400">Entdecke und sammle seltene und mächtige Karten aus verschiedenen Kategorien.</p>
+                    <div class="mt-4">
+                        <a href="cards" class="text-white hover:underline">Mehr anzeigen →</a>
+                    </div>
+                </div>
+
+                <!-- Tauschen Card -->
+                <div class="card rounded-xl p-6">
+                    <h3 class="text-2xl font-bold mb-4">Karten Tauschen</h3>
+                    <p class="text-gray-400">Tausche Karten mit anderen Spielern, um deine Sammlung zu vervollständigen.</p>
+                    <div class="mt-4">
+                        <a href="#" class="text-white hover:underline">Tauschbörse →</a>
+                    </div>
+                </div>
+
+                <!-- Spielen Card -->
+                <div class="card rounded-xl p-6">
+                    <h3 class="text-2xl font-bold mb-4">Spielen</h3>
+                    <p class="text-gray-400">Spiele gegen andere Spieler oder Bots und teste dein Können.</p>
+                    <div class="mt-4">
+                        <a href="games" class="text-white hover:underline">Jetzt spielen →</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Neuigkeiten Section -->
+        <section class="container mx-auto py-16 px-4">
+            <h2 class="text-3xl font-bold mb-8 gradient-text">Neueste Updates</h2>
+            <div id="steam-news" class="grid md:grid-cols-2 gap-8">
+                <!-- Hier werden dynamisch Neuigkeiten angezeigt -->
+            </div>
+        </section>
+        
+
+        <!-- Footer -->
+        <footer class="py-8">
+            <div class="container mx-auto px-4 text-center">
+                <p class="text-gray-400">© 2024 TradingCards. Alle Rechte vorbehalten.</p>
+            </div>
+        </footer>
+    </div>
+    <script>
+        // Hier können dynamische Daten für Neuigkeiten, Karten oder Spielergebnisse eingebunden werden
+    </script>
+</body>
+</html>
